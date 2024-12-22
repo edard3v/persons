@@ -28,7 +28,7 @@ export const DELETE: APIRoute = async ({ params }) => {
       msg: `La persona con id: ${id} fue eliminada correctamente.`,
     }),
     {
-      status: 201,
+      status: 200,
       headers: { "Content-Type": "application/json" },
     }
   );

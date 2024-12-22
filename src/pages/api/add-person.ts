@@ -1,12 +1,12 @@
 import type { APIRoute } from "astro";
-import { PERSONS } from "../../database/persons";
+import { db, Persons } from "astro:db";
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
   const newPerson = await request.json();
 
-  PERSONS.push({ id: crypto.randomUUID(), ...newPerson });
+  await db.insert(Persons).values({ id: crypto.randomUUID(), ...newPerson });
 
   return new Response(
     JSON.stringify({ msg: `${newPerson.name} fue agg correctamente.` }),

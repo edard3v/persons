@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { PERSONS } from "../../../database/persons";
+import { db, eq, Persons } from "astro:db";
 
 export const prerender = false;
 
@@ -7,30 +7,28 @@ export const PUT: APIRoute = async ({ params, request }) => {
   const body = (await request.json()) as Body;
   const { id } = params as { id: string };
 
-  const person = PERSONS.find((person) => person.id === id);
-  const oldPerson = { ...person };
+  const { rowsAffected } = await db
+    .update(Persons)
+    .set({ ...body })
+    .where(eq(Persons.id, id));
 
-  if (!person)
+  if (!rowsAffected)
     return new Response(
-      JSON.stringify({ msg: `No existe persona con id: ${id}` }),
+      JSON.stringify({
+        msg: `No existe una persona con id: ${id}`,
+      }),
       {
         status: 404,
         headers: { "Content-Type": "application/json" },
       }
     );
 
-  person.age = body.age ?? person.age;
-  person.countryCode = body.countryCode ?? person.countryCode;
-  person.name = body.name ?? person.name;
-  person.tel = body.tel ?? person.tel;
-
   return new Response(
     JSON.stringify({
-      oldPerson,
-      newPerson: person,
+      msg: `La persona con id: ${id} fue actualizada correctamente.`,
     }),
     {
-      status: 201,
+      status: 200,
       headers: { "Content-Type": "application/json" },
     }
   );

@@ -1,10 +1,12 @@
 import type { APIRoute } from "astro";
-import { PERSONS } from "../../database/persons";
+import { db, Persons } from "astro:db";
 
 export const prerender = false;
 
 export const GET: APIRoute = async () => {
-  return new Response(JSON.stringify(PERSONS), {
+  const persons = await db.select().from(Persons);
+
+  return new Response(JSON.stringify(persons), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });
